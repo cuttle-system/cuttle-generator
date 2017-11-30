@@ -1,0 +1,7 @@
+/build
+/.vscode/*
+/.vscode
+/.vs
+/CMakeSettings.json
+test_file_access.txt
+/CppProperties.json
