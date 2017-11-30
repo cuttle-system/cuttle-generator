@@ -1,11 +1,12 @@
 #include <string>
-#include "generator.hpp"
+#include "generator_methods.hpp"
 #include "generate_error.hpp"
+#include "function.hpp"
 
 void cuttle::generate(const cuttle::context_t & context, int& index, const cuttle::values_t & values, const cuttle::call_tree & tree, cuttle::generator_state_t& state) {
 	using namespace cuttle;
 
-	while(index < tree.src.size() && values[index].type != TYPE_FUNCTION_NAME && !state.used[index]) ++index;
+	while(index < tree.src.size() && values[index].type != value_type::func_name && !state.used[index]) ++index;
 
 	if (index >= tree.src.size()) {
 		return;
@@ -18,7 +19,7 @@ void cuttle::generate(const cuttle::context_t & context, int& index, const cuttl
 	function_t function;
 
 	if (args_indexes.size() == 0) {
-		function = {PREFIX_FUNCTION, 0};
+		function = {function_type::prefix, 0};
 	} else if (context.funcname_to_id.find(function_name) != context.funcname_to_id.end()) {
 		function_id_t function_id = context.funcname_to_id.at(function_name);
 		function = context.funcs[function_id];
@@ -30,17 +31,17 @@ void cuttle::generate(const cuttle::context_t & context, int& index, const cuttl
 		throw generate_error("'" + function_name + "' not found");
 	}
 
-	if (function.type == PREFIX_FUNCTION) {
+	if (function.type == function_type::prefix) {
 		state.output += function_name + " ";
 	}
 
 	for (int i = 0; i < args_indexes.size(); ++i) {
-		if (function.type == INFIX_FUNCTION && i == function.args_number / 2) {
+		if (function.type == function_type::infix && i == function.args_number / 2) {
 			state.output += function_name + " ";
 		}
 
 		auto argi = args_indexes[i];
-		if (values[argi].type == TYPE_FUNCTION_NAME) {
+		if (values[argi].type == value_type::func_name) {
 			generator_state_t child_state = state;
 			child_state.output = "";
 			generate(context, args_indexes[i], values, tree, child_state);
@@ -51,7 +52,7 @@ void cuttle::generate(const cuttle::context_t & context, int& index, const cuttl
 		}
 	}
 
-	if (function.type == POSTFIX_FUNCTION) {
+	if (function.type == function_type::postfix) {
 		state.output += function_name;
 	}
 	else {

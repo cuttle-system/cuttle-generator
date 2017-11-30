@@ -3,12 +3,18 @@ cmake_minimum_required(VERSION 3.0.2)
 project(CuttleTranslator VERSION 0.1 LANGUAGES CXX)
 
 include(CMakeToolsHelpers OPTIONAL)
+include(cmake/prepend_path.cmake)
 
 file(GLOB SRCS "src/*.cpp")
 file(GLOB TEST_SRCS "tests/*.cpp")
 
 file(GLOB HEADERS "src/*.hpp")
 file(GLOB TEST_HEADERS "tests/*.hpp")
+
+set(DEPS_PARSER_SRCS_TEST_lst
+	"context.cpp"
+	"function_priority.cpp")
+prepend_path(DEPS_PARSER_SRCS_TEST "deps/cuttle-parser/src/" ${DEPS_PARSER_SRCS_TEST_lst})
 
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -30,9 +36,9 @@ elseif(WIN32)
 endif()
 
 add_library(cuttle_translator SHARED ${SRCS} ${HEADERS})
-add_executable(tests ${TEST_SRCS} ${HEADERS} ${TEST_HEADERS})
+add_executable(tests ${TEST_SRCS} ${DEPS_PARSER_SRCS_TEST} ${HEADERS} ${TEST_HEADERS})
 
-target_include_directories(cuttle_translator PRIVATE "src/")
-target_include_directories(tests PRIVATE "src/" "tests/")
+target_include_directories(cuttle_translator PRIVATE "src/" "deps/cuttle-parser/src/" "deps/cuttle-translator/src/")
+target_include_directories(tests PRIVATE "src/" "tests/" "deps/cuttle-parser/src/" "deps/cuttle-translator/src/")
 
 target_link_libraries(tests cuttle_translator)
