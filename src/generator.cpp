@@ -2,8 +2,12 @@
 #include "generator_methods.hpp"
 #include "generate_error.hpp"
 #include "function.hpp"
+#include "presenter.hpp"
 
-void cuttle::generate(const cuttle::context_t & context, int& index, const cuttle::values_t & values, const cuttle::call_tree & tree, cuttle::generator_state_t& state) {
+void cuttle::generate(
+	const cuttle::tokenizer_config_t& tokenizer_config, const cuttle::context_t & context,
+	int& index, const cuttle::values_t & values, const cuttle::call_tree & tree, cuttle::generator_state_t& state
+) {
 	using namespace cuttle;
 
 	while(index < tree.src.size() && values[index].type != value_type::func_name && !state.used[index]) ++index;
@@ -44,10 +48,11 @@ void cuttle::generate(const cuttle::context_t & context, int& index, const cuttl
 		if (values[argi].type == value_type::func_name) {
 			generator_state_t child_state = state;
 			child_state.output = "";
-			generate(context, args_indexes[i], values, tree, child_state);
+			generate(tokenizer_config, context, argi, values, tree, child_state);
 			state.output += child_state.output + " ";
+			state.used = child_state.used;
 		} else {
-			state.output += values[argi].value + " ";
+			state.output += present(tokenizer_config, values[argi]) + " ";
 			state.used[argi] = true;
 		}
 	}
