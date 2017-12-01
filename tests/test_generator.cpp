@@ -121,8 +121,36 @@ inline void test_generates_nested_functions_code() {
 	}
 }
 
+inline void test_generates_zero_length_code() {
+	using namespace cuttle;
+
+	context_t context;
+	initialize(context);
+
+	add(context, "+", { function_type::infix, 2 }, FUNCTION_ID_UNKNOWN);
+	add(context, "-", { function_type::infix, 2 }, FUNCTION_ID_UNKNOWN);
+	add(context, "*", { function_type::infix, 2 }, FUNCTION_ID_UNKNOWN);
+	add(context, "!", { function_type::postfix, 1 }, FUNCTION_ID_UNKNOWN);
+
+	tokenizer_config_t tokenizer_config = { {},{ { "'",{ "'" } } },{},{},false };
+
+	{
+		values_t values = { { "foo", value_type::func_name },{ "+", value_type::func_name },{ "bar", value_type::func_name } };
+		call_tree_t tree = { { {},{ 0, 2 },{} } };
+		generator_state_t state;
+		int index = 1;
+		initialize(state, tree.src.size());
+
+		generate(tokenizer_config, context, index, values, tree, state);
+		AssertEqual(index, 1, "Index");
+		AssertEqual(state.output, "foo + bar", "Output");
+		AssertEqual(state.used, (std::vector<bool>{ true, true, true }), "Used");
+	}
+}
+
 void run_generator_tests() {
     TESTCASE
 	test_generates_basic_code();
 	test_generates_nested_functions_code();
+	test_generates_zero_length_code();
 }
