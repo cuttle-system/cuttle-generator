@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-project(CuttleTranslator VERSION 0.1 LANGUAGES CXX)
+project(CuttleGenerator VERSION 0.1 LANGUAGES CXX)
 
 include(CMakeToolsHelpers OPTIONAL)
 include(cmake/prepend_path.cmake)
@@ -35,10 +35,10 @@ elseif(WIN32)
 	#set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 endif()
 
-add_library(cuttle_translator SHARED ${SRCS} ${HEADERS})
-add_executable(tests ${TEST_SRCS} ${DEPS_PARSER_SRCS_TEST} ${HEADERS} ${TEST_HEADERS})
+add_library(cuttle_generator SHARED ${SRCS} ${HEADERS})
+add_executable(cuttle_generator_tests ${TEST_SRCS} ${DEPS_PARSER_SRCS_TEST} ${HEADERS} ${TEST_HEADERS})
 
-target_include_directories(cuttle_translator PRIVATE "src/" "deps/cuttle-parser/src/" "deps/cuttle-translator/src/")
-target_include_directories(tests PRIVATE "src/" "tests/" "deps/cuttle-parser/src/" "deps/cuttle-translator/src/")
+target_include_directories(cuttle_generator PRIVATE "src/" "deps/cuttle-parser/src/" "deps/cuttle-translator/src/")
+target_include_directories(cuttle_generator_tests PRIVATE "src/" "tests/" "deps/cuttle-parser/src/" "deps/cuttle-translator/src/")
 
-target_link_libraries(tests cuttle_translator)
+target_link_libraries(cuttle_generator_tests cuttle_generator)
