@@ -1,16 +1,15 @@
 #include <string>
 #include "generator_methods.hpp"
 #include "generate_error.hpp"
-#include "function.hpp"
 #include "presenter.hpp"
 
 void cuttle::generate(
-	const cuttle::tokenizer_config_t& tokenizer_config, const cuttle::context_t & context,
-	int& index, const cuttle::values_t & values, const cuttle::call_tree & tree, cuttle::generator_state_t& state
+	const tokenizer_config_t& tokenizer_config, const context_t & context,
+	unsigned int& index, const values_t & values, const call_tree_t & tree, generator_state_t& state
 ) {
 	using namespace cuttle;
 
-	while(index < tree.src.size() && values[index].type != value_type::func_name && !state.used[index]) ++index;
+	while (index < tree.src.size() && values[index].type != value_type::func_name && !state.used[index]) ++index;
 
 	if (index >= tree.src.size()) {
 		return;
@@ -22,7 +21,7 @@ void cuttle::generate(
 	const std::string& function_name = values[index].value;
 	function_t function;
 
-	if (args_indexes.size() == 0) {
+	if (args_indexes.empty()) {
 		function = {function_type::prefix, 0};
 	} else if (context.funcname_to_id.find(function_name) != context.funcname_to_id.end()) {
 		function_id_t function_id = context.funcname_to_id.at(function_name);
@@ -39,12 +38,12 @@ void cuttle::generate(
 		state.output += function_name + " ";
 	}
 
-	for (int i = 0; i < args_indexes.size(); ++i) {
+	for (unsigned int i = 0; i < args_indexes.size(); ++i) {
 		if (function.type == function_type::infix && i == function.args_number / 2) {
 			state.output += function_name + " ";
 		}
 
-		auto argi = args_indexes[i];
+		unsigned int argi = args_indexes[i];
 		if (values[argi].type == value_type::func_name) {
 			generator_state_t child_state = state;
 			child_state.output = "";
@@ -65,7 +64,7 @@ void cuttle::generate(
 	}
 }
 
-void cuttle::initialize(cuttle::generator_state_t & state, int size) {
+void cuttle::initialize(cuttle::generator_state_t & state, unsigned int size) {
 	state.used.assign(size, false);
 	state.output = "";
 }

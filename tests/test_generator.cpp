@@ -1,10 +1,8 @@
 #include <iostream>
-#include <string>
 #include "test.hpp"
 #include "test_generator.hpp"
 #include "context_methods.hpp"
 #include "generator_methods.hpp"
-#include "tokenizer_config.hpp"
 
 inline void test_generates_basic_code() {
 	using namespace cuttle;
@@ -23,7 +21,7 @@ inline void test_generates_basic_code() {
 		values_t values = { {"foo", value_type::func_name}, {"1", value_type::number}, {"2", value_type::number},{ "3", value_type::number } };
 		call_tree_t tree = { { {1, 2, 3}, {}, {}, {} } };
 		generator_state_t state;
-		int index = 0;
+		unsigned int index = 0;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -35,7 +33,7 @@ inline void test_generates_basic_code() {
 		values_t values = { { "+", value_type::func_name },{ "1", value_type::number },{ "2", value_type::number } };
 		call_tree_t tree = { { { 1, 2 },{},{} } };
 		generator_state_t state;
-		int index = 0;
+		unsigned int index = 0;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -47,7 +45,7 @@ inline void test_generates_basic_code() {
 		values_t values = { { "1", value_type::number },{ "2", value_type::number },{ "-", value_type::func_name } };
 		call_tree_t tree = { { {},{},{ 0, 1 } } };
 		generator_state_t state;
-		int index = 0;
+		unsigned int index = 0;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -59,7 +57,7 @@ inline void test_generates_basic_code() {
 		values_t values = { { "!", value_type::func_name },{ "5", value_type::number } };
 		call_tree_t tree = { { { 1 },{} } };
 		generator_state_t state;
-		int index = 0;
+		unsigned int index = 0;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -71,7 +69,7 @@ inline void test_generates_basic_code() {
 		values_t values = { { "foo", value_type::func_name },{ "1", value_type::number },{ "2", value_type::number },{ "foo bar", value_type::string } };
 		call_tree_t tree = { { { 1, 2, 3 },{},{},{} } };
 		generator_state_t state;
-		int index = 0;
+		unsigned int index = 0;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -99,7 +97,7 @@ inline void test_generates_nested_functions_code() {
 		values_t values = { { "*", value_type::func_name },{ "+", value_type::func_name },{ "2", value_type::number },{ "1", value_type::number },{ "5", value_type::number } };
 		call_tree_t tree = { { { 2, 4 },{ 0, 3 },{},{},{} } };
 		generator_state_t state;
-		int index = 1;
+		unsigned int index = 1;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -111,7 +109,7 @@ inline void test_generates_nested_functions_code() {
 		values_t values = { { "foo", value_type::func_name },{ "10", value_type::number },{ "+", value_type::func_name },{ "2", value_type::number },{ "3", value_type::number },{ "!", value_type::func_name },{ "5", value_type::number } };
 		call_tree_t tree = { { { 1, 2, 3 },{},{ 4, 5 },{},{},{ 6 },{} } };
 		generator_state_t state;
-		int index = 0;
+		unsigned int index = 0;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);
@@ -138,7 +136,7 @@ inline void test_generates_zero_length_code() {
 		values_t values = { { "foo", value_type::func_name },{ "+", value_type::func_name },{ "bar", value_type::func_name } };
 		call_tree_t tree = { { {},{ 0, 2 },{} } };
 		generator_state_t state;
-		int index = 1;
+		unsigned int index = 1;
 		initialize(state, tree.src.size());
 
 		generate(tokenizer_config, context, index, values, tree, state);

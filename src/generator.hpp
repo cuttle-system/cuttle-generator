@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace cuttle {
-	using generator_state_t = struct {
+	struct generator_state_t {
 		std::vector<bool> used;
 		std::string output;
 	};
