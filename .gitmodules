@@ -1,9 +1,0 @@
-[submodule "deps/cuttle-parser"]
-	path = deps/cuttle-parser
-	url = git@github.com:cuttle-system/cuttle-parser.git
-[submodule "deps/cuttle-translator"]
-	path = deps/cuttle-translator
-	url = git@github.com:cuttle-system/cuttle-translator.git
-[submodule "tests/cuttle-test"]
-	path = tests/cuttle-test
-	url = git@github.com:cuttle-system/cuttle-test.git
