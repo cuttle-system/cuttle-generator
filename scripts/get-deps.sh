@@ -1,16 +1,13 @@
-#!/bin/bash
-cd $(dirname "$0")/../..
+#!/usr/bin/env bash
 
+cd $(dirname "$0")
+SCRIPTS_PATH=$(pwd)
+cd ../..
 WORKSPACE_PATH=$(pwd)
 
-git clone git@github.com:cuttle-system/cuttle-parser.git
-cuttle-parser/scripts/get-deps.sh
-
-cd $WORKSPACE_PATH
-
-git clone git@github.com:cuttle-system/cuttle-translator.git
-cuttle-translator/scripts/get-deps.sh
-
-cd $WORKSPACE_PATH
-
-git clone git@github.com:cuttle-system/cuttle-test.git
+for dep in $SCRIPTS_PATH/deps/*
+do
+    cd $WORKSPACE_PATH
+    echo Getting dependency: $dep
+    $dep
+done

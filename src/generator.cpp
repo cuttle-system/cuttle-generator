@@ -64,7 +64,7 @@ void cuttle::generate(
 	}
 }
 
-void cuttle::initialize(cuttle::generator_state_t & state, unsigned int size) {
+void cuttle::initialize(cuttle::generator_state_t & state, unsigned long size) {
 	state.used.assign(size, false);
 	state.output = "";
 }

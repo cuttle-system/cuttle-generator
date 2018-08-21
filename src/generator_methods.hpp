@@ -12,5 +12,5 @@ namespace cuttle {
 		unsigned int& index, const values_t& values, const call_tree_t& tree, generator_state_t& state
 	);
 
-	void initialize(generator_state_t& state, unsigned int size);
+	void initialize(generator_state_t& state, unsigned long size);
 }
