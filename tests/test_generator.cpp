@@ -212,5 +212,60 @@ BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code, generates_zero_length_code_
                 used_expected.begin(), used_expected.end());
     }
 
+    BOOST_AUTO_TEST_CASE(case2) {
+        values_t values = {};
+        call_tree_t tree = {};
+        generator_state_t state;
+        std::vector<bool> used_expected {};
+        unsigned int index = 0;
+        initialize(state, tree.src.size());
+
+        generate(tokenizer_config, context, index, values, tree, state);
+        BOOST_CHECK_EQUAL(index, 0u);
+        BOOST_CHECK_EQUAL(state.output, "");
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                state.used.begin(), state.used.end(),
+                used_expected.begin(), used_expected.end());
+    }
+
 BOOST_AUTO_TEST_SUITE_END()
+
+struct generates_unknown_function_names_with_zero_args_fixture {
+    context_t context;
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+
+    void setup() {
+        initialize(context);
+
+        add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
+        add(context, "-", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
+        add(context, "*", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
+        add(context, "!", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_code, generates_unknown_function_names_with_zero_args_fixture)
+
+    BOOST_AUTO_TEST_CASE(case1) {
+        values_t values = {{"foo", value_type::func_name},
+                           {"+",   value_type::func_name},
+                           {"bar", value_type::func_name},
+                           {"!",   value_type::func_name}};
+        call_tree_t tree = {{{}, {0, 3}, {}, {2}}};
+        generator_state_t state;
+        std::vector<bool> used_expected {true, true, true, true};
+        unsigned int index = 1;
+        initialize(state, tree.src.size());
+
+        generate(tokenizer_config, context, index, values, tree, state);
+        BOOST_CHECK_EQUAL(index, 1u);
+        BOOST_CHECK_EQUAL(state.output, "foo + bar !");
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+                state.used.begin(), state.used.end(),
+                used_expected.begin(), used_expected.end());
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
 
