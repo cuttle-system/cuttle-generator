@@ -87,7 +87,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_basic_code_suite, generates_basic_code_suite_
 
 BOOST_AUTO_TEST_SUITE_END()
 
-struct generates_nested_functions_code_fixture {
+struct generates_nested_functions_code_suite_fixture {
     context_t context;
     tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
     generator_config_t generator_config;
@@ -103,7 +103,7 @@ struct generates_nested_functions_code_fixture {
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(generates_nested_functions_code, generates_nested_functions_code_fixture)
+BOOST_FIXTURE_TEST_SUITE(generates_nested_functions_code_suite, generates_nested_functions_code_suite_fixture)
 
     BOOST_AUTO_TEST_CASE(case1) {
         values_t values = {{"*", value_type::func_name},
@@ -138,7 +138,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_nested_functions_code, generates_nested_funct
 BOOST_AUTO_TEST_SUITE_END()
 
 
-struct generates_zero_length_code_fixture {
+struct generates_zero_length_code_suite_fixture {
     context_t context;
     tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
     generator_config_t generator_config;
@@ -153,7 +153,7 @@ struct generates_zero_length_code_fixture {
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code, generates_zero_length_code_fixture)
+BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code_suite, generates_zero_length_code_suite_fixture)
 
     BOOST_AUTO_TEST_CASE(case1) {
         values_t values = {{"foo", value_type::func_name},
@@ -179,7 +179,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code, generates_zero_length_code_
 
 BOOST_AUTO_TEST_SUITE_END()
 
-struct generates_unknown_function_names_with_zero_args_fixture {
+struct generates_unknown_function_names_with_zero_args_suite_fixture {
     context_t context;
     tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
     generator_config_t generator_config;
@@ -194,7 +194,7 @@ struct generates_unknown_function_names_with_zero_args_fixture {
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_code, generates_unknown_function_names_with_zero_args_fixture)
+BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_suite, generates_unknown_function_names_with_zero_args_suite_fixture)
 
     BOOST_AUTO_TEST_CASE(case1) {
         values_t values = {{"foo", value_type::func_name},
@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_code, g
 
 BOOST_AUTO_TEST_SUITE_END()
 
-struct generate_merges_certain_functions_up_in_hierarchy_fixture {
+struct generate_merges_certain_functions_up_in_hierarchy_suite_fixture {
     context_t context;
     tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
     generator_config_t generator_config = {{"!", "join"}};
@@ -227,8 +227,8 @@ struct generate_merges_certain_functions_up_in_hierarchy_fixture {
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(generate_merges_certain_functions_up_in_hierarchy_code,
-        generate_merges_certain_functions_up_in_hierarchy_fixture)
+BOOST_FIXTURE_TEST_SUITE(generate_merges_certain_functions_up_in_hierarchy_suite,
+        generate_merges_certain_functions_up_in_hierarchy_suite_fixture)
 
     BOOST_AUTO_TEST_CASE(case1) {
         values_t values = {{"foo", value_type::func_name},
