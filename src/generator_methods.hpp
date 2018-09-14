@@ -7,10 +7,8 @@
 #include "tokenizer_config.hpp"
 
 namespace cuttle {
-	void generate(
-		const tokenizer_config_t& tokenizer_config, const context_t& context,
-		unsigned int& index, const values_t& values, const call_tree_t& tree, generator_state_t& state
-	);
+	void generate(const tokenizer_config_t &tokenizer_config, const context_t &context, const values_t &values,
+                      const call_tree_t &tree, generator_state_t &state);
 
-	void initialize(generator_state_t& state, unsigned long size);
+	void initialize(cuttle::generator_state_t &state);
 }

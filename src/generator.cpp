@@ -3,19 +3,12 @@
 #include "generate_error.hpp"
 #include "presenter.hpp"
 
-void cuttle::generate(
-	const tokenizer_config_t& tokenizer_config, const context_t & context,
-	unsigned int& index, const values_t & values, const call_tree_t & tree, generator_state_t& state
-) {
-	using namespace cuttle;
+using namespace cuttle;
 
-	while (index < tree.src.size() && values[index].type != value_type::func_name && !state.used[index]) ++index;
+void generate_inner(const tokenizer_config_t &tokenizer_config, const context_t &context, const values_t &values,
+					  const call_tree_t &tree, generator_state_t &state) {
 
-	if (index >= tree.src.size()) {
-		return;
-	}
-
-	state.used[index] = true;
+	auto index = state.index;
 
 	auto args_indexes = tree.src[index];
 	const std::string& function_name = values[index].value;
@@ -46,13 +39,12 @@ void cuttle::generate(
 		unsigned int argi = args_indexes[i];
 		if (values[argi].type == value_type::func_name) {
 			generator_state_t child_state = state;
+			child_state.index = argi;
 			child_state.output = "";
-			generate(tokenizer_config, context, argi, values, tree, child_state);
+			generate_inner(tokenizer_config, context, values, tree, child_state);
 			state.output += child_state.output + " ";
-			state.used = child_state.used;
 		} else {
 			state.output += present(tokenizer_config, values[argi]) + " ";
-			state.used[argi] = true;
 		}
 	}
 
@@ -64,7 +56,16 @@ void cuttle::generate(
 	}
 }
 
-void cuttle::initialize(cuttle::generator_state_t & state, unsigned long size) {
-	state.used.assign(size, false);
+void cuttle::generate(const tokenizer_config_t &tokenizer_config, const context_t &context, const values_t &values,
+              const call_tree_t &tree, generator_state_t &state) {
+
+    for (auto root_index : tree.src.back()) {
+        state.index = root_index;
+        generate_inner(tokenizer_config, context, values, tree, state);
+    }
+}
+
+void cuttle::initialize(cuttle::generator_state_t &state) {
+	state.index = 0;
 	state.output = "";
 }

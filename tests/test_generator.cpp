@@ -28,71 +28,47 @@ BOOST_FIXTURE_TEST_SUITE(generates_basic_code_suite, generates_basic_code_suite_
                            {"1",   value_type::number},
                            {"2",   value_type::number},
                            {"3",   value_type::number}};
-        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}}};
+        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true, true};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 0u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "foo 1 2 3");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
     BOOST_AUTO_TEST_CASE(case2) {
         values_t values = {{"+", value_type::func_name},
                            {"1", value_type::number},
                            {"2", value_type::number}};
-        call_tree_t tree = {{{1, 2}, {}, {}}};
+        call_tree_t tree = {{{1, 2}, {}, {}, {0}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 0u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "1 + 2");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
     BOOST_AUTO_TEST_CASE(case3) {
         values_t values = {{"1", value_type::number},
                            {"2", value_type::number},
                            {"-", value_type::func_name}};
-        call_tree_t tree = {{{}, {}, {0, 1}}};
+        call_tree_t tree = {{{}, {}, {0, 1}, {2}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 2u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "1 - 2");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
     BOOST_AUTO_TEST_CASE(case4) {
         values_t values = {{"!", value_type::func_name},
                            {"5", value_type::number}};
-        call_tree_t tree = {{{1}, {}}};
+        call_tree_t tree = {{{1}, {}, {0}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 0u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "5 !");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
     BOOST_AUTO_TEST_CASE(case5) {
@@ -100,18 +76,12 @@ BOOST_FIXTURE_TEST_SUITE(generates_basic_code_suite, generates_basic_code_suite_
                            {"1",       value_type::number},
                            {"2",       value_type::number},
                            {"foo bar", value_type::string}};
-        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}}};
+        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true, true};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 0u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "foo 1 2 'foo bar'");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -139,18 +109,12 @@ BOOST_FIXTURE_TEST_SUITE(generates_nested_functions_code, generates_nested_funct
                            {"2", value_type::number},
                            {"1", value_type::number},
                            {"5", value_type::number}};
-        call_tree_t tree = {{{2, 4}, {0, 3}, {}, {}, {}}};
+        call_tree_t tree = {{{2, 4}, {0, 3}, {}, {}, {}, {1}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true, true, true};
-        unsigned int index = 1;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 1u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "2 * 5 + 1");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
     BOOST_AUTO_TEST_CASE(case2) {
@@ -161,18 +125,12 @@ BOOST_FIXTURE_TEST_SUITE(generates_nested_functions_code, generates_nested_funct
                            {"3",   value_type::number},
                            {"!",   value_type::func_name},
                            {"5",   value_type::number}};
-        call_tree_t tree = {{{1, 2, 3}, {}, {4, 5}, {}, {}, {6}, {}}};
+        call_tree_t tree = {{{1, 2, 3}, {}, {4, 5}, {}, {}, {6}, {}, {0}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true, true, true, true, true};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 0u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "foo 10 3 + 5 ! 2");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -198,34 +156,22 @@ BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code, generates_zero_length_code_
         values_t values = {{"foo", value_type::func_name},
                            {"+",   value_type::func_name},
                            {"bar", value_type::func_name}};
-        call_tree_t tree = {{{}, {0, 2}, {}}};
+        call_tree_t tree = {{{}, {0, 2}, {}, {1}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true};
-        unsigned int index = 1;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 1u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "foo + bar");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
     BOOST_AUTO_TEST_CASE(case2) {
         values_t values = {};
-        call_tree_t tree = {};
+        call_tree_t tree = {{{}}};
         generator_state_t state;
-        std::vector<bool> used_expected {};
-        unsigned int index = 0;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 0u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -251,18 +197,12 @@ BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_code, g
                            {"+",   value_type::func_name},
                            {"bar", value_type::func_name},
                            {"!",   value_type::func_name}};
-        call_tree_t tree = {{{}, {0, 3}, {}, {2}}};
+        call_tree_t tree = {{{}, {0, 3}, {}, {2}, {1}}};
         generator_state_t state;
-        std::vector<bool> used_expected {true, true, true, true};
-        unsigned int index = 1;
-        initialize(state, tree.src.size());
+        initialize(state);
 
-        generate(tokenizer_config, context, index, values, tree, state);
-        BOOST_CHECK_EQUAL(index, 1u);
+        generate(tokenizer_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "foo + bar !");
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                state.used.begin(), state.used.end(),
-                used_expected.begin(), used_expected.end());
     }
 
 BOOST_AUTO_TEST_SUITE_END()
