@@ -4,6 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "context_methods.hpp"
 #include "generator_methods.hpp"
+#include "generator_presenters_map_methods.hpp"
 
 using namespace cuttle;
 
@@ -282,7 +283,8 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
         add(context, "*", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "!", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
 
-        generator_config.presenters_map["+"] = generator_presenters_t{
+
+        add(generator_config.presenters_map, "+",
             [](int argi, bool is_func) {
                 if (argi == 0) return std::string("");
                 return std::string("\n");
@@ -291,7 +293,7 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
             }, [](int argi, bool is_func) {
                 return false;
             }
-        };
+        );
     }
 };
 
