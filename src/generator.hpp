@@ -14,7 +14,7 @@ namespace cuttle {
         int arg_index;
 
         bool joined_function;
-        bool include_function_name = true;
+        bool include_function_name;
         generator_presenters_t presenters;
 
         tree_src_elements_t args_indexes;
