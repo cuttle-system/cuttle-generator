@@ -1,88 +1,96 @@
 #include <string>
 #include "generator_methods.hpp"
 #include "generate_error.hpp"
+#include "generator_presenters_methods.hpp"
 #include "presenter.hpp"
+
+#include "generator_defaults.hpp"
 
 using namespace cuttle;
 
-std::string present_function_name(generator_state_t &state, const std::string &function_name) {
+std::string present_function_name(generator_state_t &state) {
     if (state.include_function_name) {
-        return function_name + state.separator.str;
+        return present(state, state.function_name, state.arg_index, true);
     }
     return "";
 }
 
 void generate_inner(const tokenizer_config_t &tokenizer_config, const generator_config_t &generator_config,
                     const context_t &context, const values_t &values,
-                    const call_tree_t &tree, generator_state_t &state) {
+                    const call_tree_t &tree, generator_state_t &state, bool override = false) {
 
-	auto index = state.index;
-	auto args_indexes = tree.src[index];
+	state.args_indexes = tree.src[state.index];
     state.include_function_name = true;
-    const std::string &function_name = (values.size() <= index) ? GENERATOR_ROOT_FUNCTION_NAME : values[index].value;
+    state.function_name = (values.size() <= state.index) ? GENERATOR_ROOT_FUNCTION_NAME : values[state.index].value;
 
-    if (values.size() <= index) {
+    if (values.size() <= state.index) {
         state.include_function_name = false;
     }
 
-    std::string separator = " ";
-
-	if (generator_config.joined_functions.count(function_name)) {
+	if (generator_config.joined_functions.count(state.function_name)) {
+	    state.joined_function = true;
         state.include_function_name = false;
-        separator = state.separator.str;
-        state.separator.enabled = false;
 	} else {
-        if (state.separator.enabled) {
-            separator = state.separator.str;
-            state.separator.enabled = false;
-        } else {
-            state.separator.str = separator;
-        }
+	    state.joined_function = false;
+	    state.arg_index = 0;
+	    if (generator_config.presenters_map.count(state.function_name)) {
+            state.presenters = generator_config.presenters_map.at(state.function_name);
+	    } else {
+	        if (!override) {
+                state.presenters = generator_presenters_t{
+                        generator::defaults::basic::presenter_left_separator,
+                        generator::defaults::basic::presenter_right_separator,
+                        generator::defaults::basic::presenter_skip};
+            }
+	    }
     }
 
-	function_t function;
-
-	if (args_indexes.empty()) {
-        function = {function_type::prefix, 0};
-    } else if (function_name == GENERATOR_ROOT_FUNCTION_NAME) {
-	    function = {function_type::prefix, (unsigned int) args_indexes.size()};
-	} else if (context.funcname_to_id.find(function_name) != context.funcname_to_id.end()) {
-		function_id_t function_id = context.funcname_to_id.at(function_name);
-		function = context.funcs[function_id];
+	if (state.args_indexes.empty()) {
+        state.function = {function_type::prefix, 0};
+    } else if (state.function_name == GENERATOR_ROOT_FUNCTION_NAME) {
+	    state.function = {function_type::prefix, (unsigned int) state.args_indexes.size()};
+	} else if (context.funcname_to_id.find(state.function_name) != context.funcname_to_id.end()) {
+		function_id_t function_id = context.funcname_to_id.at(state.function_name);
+		state.function = context.funcs[function_id];
 		
-		if (args_indexes.size() != function.args_number) {
-			throw generate_error("'" + function_name + "' recieves " + std::to_string(function.args_number) + " args");
+		if (state.args_indexes.size() != state.function.args_number) {
+			throw generate_error("'" + state.function_name + "' recieves " + std::to_string(state.function.args_number) + " args");
 		}
 	} else {
-		throw generate_error("'" + function_name + "' not found");
+		throw generate_error("'" + state.function_name + "' not found");
 	}
 
-
-	if (function.type == function_type::prefix) {
-		state.output += present_function_name(state, function_name);
+	if (state.function.type == function_type::prefix) {
+		state.output += present_function_name(state);
 	}
 
-	for (tree_src_element_t i = 0; i < args_indexes.size(); ++i) {
-		if (function.type == function_type::infix && i == function.args_number / 2) {
-			state.output += present_function_name(state, function_name);
+	for (tree_src_element_t i = 0; i < state.args_indexes.size(); ++i) {
+		if (state.function.type == function_type::infix && i == state.function.args_number / 2) {
+			state.output += present_function_name(state);
 		}
 
-		tree_src_element_t argi = args_indexes[i];
+		tree_src_element_t argi = state.args_indexes[i];
 		if (values[argi].type == value_type::func_name) {
-			generator_state_t child_state = state;
+			generator_state_t child_state;
 			child_state.index = argi;
-			child_state.output = "";
+			child_state.arg_index = state.arg_index;
+			child_state.presenters = state.presenters;
             generate_inner(tokenizer_config, generator_config, context, values, tree, child_state);
-			state.output += child_state.output + separator;
+			if (child_state.joined_function) {
+                state.output += child_state.output;
+                state.arg_index = child_state.arg_index;
+			} else {
+                state.output += present(state, child_state.output, state.arg_index);
+			    ++state.arg_index;
+			}
 		} else {
-			state.output += present(tokenizer_config, values[argi]) + separator;
+			state.output += present(state, present(tokenizer_config, values[argi]), state.arg_index);
+            ++state.arg_index;
 		}
 	}
 
-	if (function.type == function_type::postfix && state.include_function_name) {
-		state.output += function_name;
-	} else {
-		state.output.pop_back();
+	if (state.function.type == function_type::postfix) {
+		state.output += present_function_name(state);
 	}
 }
 
@@ -94,8 +102,11 @@ void cuttle::generate(const tokenizer_config_t &tokenizer_config, const generato
     }
 
     state.index = (unsigned int) tree.src.size() - 1;
-    state.separator = {"\n", true};
-    generate_inner(tokenizer_config, generator_config, context, values, tree, state);
+    state.presenters = generator_presenters_t{
+            generator::defaults::root::presenter_left_separator,
+            generator::defaults::root::presenter_right_separator,
+            generator::defaults::root::presenter_skip};
+    generate_inner(tokenizer_config, generator_config, context, values, tree, state, true);
 }
 
 void cuttle::initialize(cuttle::generator_state_t &state) {
