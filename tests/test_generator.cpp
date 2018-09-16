@@ -278,10 +278,13 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
         base_generator_fixture::setup();
 
         add(context, "join", {function_type::prefix, 3}, FUNCTION_ID_UNKNOWN);
+        add(context, "quux", {function_type::prefix, 3}, FUNCTION_ID_UNKNOWN);
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
+        add(context, "rem", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "-", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "*", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "!", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
+        add(context, "++", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
 
 
         add(generator_config.presenters_map, "+",
@@ -292,6 +295,33 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
                 return std::string("");
             }, [](int argi, bool is_func) {
                 return false;
+            }
+        );
+
+        add(generator_config.presenters_map, "-",
+            nullptr,
+            nullptr,
+            [](int argi, bool is_func) {
+                return is_func;
+            }
+        );
+
+        add(generator_config.presenters_map, "++",
+            nullptr,
+            nullptr,
+            [](int argi, bool is_func) {
+                return is_func;
+            }
+        );
+
+        add(generator_config.presenters_map, "quux",
+            [](int argi, bool is_func) {
+                if (argi == 0) return std::string("");
+                return std::string("   ");
+            },
+            nullptr,
+            [](int argi, bool is_func) {
+                return is_func;
             }
         );
     }
@@ -308,6 +338,90 @@ BOOST_FIXTURE_TEST_SUITE(generate_properly_uses_separators_config_suite,
 
         generate(tokenizer_config, generator_config, context, values, tree, state);
         BOOST_CHECK_EQUAL(state.output, "foo\n+\nbar");
+    }
+
+    BOOST_AUTO_TEST_CASE(case2) {
+        values_t values = {{"foo", value_type::func_name},
+                           {"-",   value_type::func_name},
+                           {"bar", value_type::func_name}};
+        call_tree_t tree = {{{}, {0, 2}, {}, {1}}};
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "foo bar");
+    }
+
+    BOOST_AUTO_TEST_CASE(case3) {
+        values_t values = {{"quux", value_type::func_name},
+                           {"baz1", value_type::func_name},
+                           {"join", value_type::func_name},
+                           {"baz2", value_type::func_name},
+                           {"baz3", value_type::func_name},
+                           {"join", value_type::func_name},
+                           {"baz4", value_type::func_name},
+                           {"baz5", value_type::func_name},
+                           {"rem", value_type::func_name},
+                           {"1", value_type::number},
+                           {"2", value_type::number},
+                           {"baz6", value_type::func_name}};
+        call_tree_t tree = {{{1, 2, 11}, {}, {3, 4, 5}, {}, {}, {6, 7, 8}, {}, {}, {9, 10}, {}, {}, {}, {0}}};
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "baz1   baz2   baz3   baz4   baz5   1 rem 2   baz6");
+    }
+
+    BOOST_AUTO_TEST_CASE(case4) {
+        values_t values = {{"join", value_type::func_name},
+                           {"baz1", value_type::func_name},
+                           {"baz2", value_type::func_name},
+                           {"baz3", value_type::func_name}};
+        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
+
+        add(generator_config.presenters_map, GENERATOR_ROOT_FUNCTION_NAME,
+            [](int argi, bool is_func) {
+                if (argi == 0) return std::string("");
+                return std::string(" ");
+            },
+            nullptr,
+            [](int argi, bool is_func) {
+                return is_func;
+            }
+        );
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "baz1 baz2 baz3");
+    }
+
+    BOOST_AUTO_TEST_CASE(case5) {
+        values_t values = {{"join", value_type::func_name},
+                           {"baz1", value_type::func_name},
+                           {"+", value_type::func_name},
+                           {"1", value_type::number},
+                           {"2", value_type::number},
+                           {"baz3", value_type::func_name}};
+        call_tree_t tree = {{{1, 2, 5}, {}, {3, 4}, {}, {}, {}, {0}}};
+
+        add(generator_config.presenters_map, GENERATOR_ROOT_FUNCTION_NAME,
+            [](int argi, bool is_func) {
+                if (argi == 0) return std::string("");
+                return std::string(" ");
+            },
+            nullptr,
+            [](int argi, bool is_func) {
+                return is_func;
+            }
+        );
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "baz1 1\n+\n2 baz3");
+    }
+
+    BOOST_AUTO_TEST_CASE(case6) {
+        values_t values = {{"baz1", value_type::func_name},
+                           {"++", value_type::func_name}};
+        call_tree_t tree = {{{}, {0}, {1}}};
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "baz1");
     }
 
 BOOST_AUTO_TEST_SUITE_END()
