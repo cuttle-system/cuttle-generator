@@ -38,7 +38,7 @@ void joined_function_check(generator_state_t &state, const generator_config_t &g
 void set_function(const context_t &context, generator_state_t &state) {
     if (state.args_indexes.empty()) {
         state.function = {function_type::prefix, 0};
-    } else if (state.function_name == GENERATOR_ROOT_FUNCTION_NAME) {
+    } else if (state.function_name == GENERATOR_ROOT_FUNCTION_NAME || state.joined_function) {
         state.function = {function_type::prefix, (unsigned int) state.args_indexes.size()};
     } else if (context.funcname_to_id.find(state.function_name) != context.funcname_to_id.end()) {
         function_id_t function_id = context.funcname_to_id.at(state.function_name);
