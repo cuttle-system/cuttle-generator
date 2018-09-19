@@ -202,11 +202,9 @@ struct generate_merges_certain_functions_up_in_hierarchy_suite_fixture : public 
     void setup() {
         base_generator_fixture::setup();
 
-        add(context, "join", {function_type::prefix, 3}, FUNCTION_ID_UNKNOWN);
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "-", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "*", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
-        add(context, "!", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
     }
 };
 
@@ -277,13 +275,11 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
     void setup() {
         base_generator_fixture::setup();
 
-        add(context, "join", {function_type::prefix, 3}, FUNCTION_ID_UNKNOWN);
         add(context, "quux", {function_type::prefix, 3}, FUNCTION_ID_UNKNOWN);
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "rem", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "-", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
         add(context, "*", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
-        add(context, "!", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
         add(context, "++", {function_type::postfix, 1}, FUNCTION_ID_UNKNOWN);
 
 
