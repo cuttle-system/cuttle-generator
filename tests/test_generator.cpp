@@ -20,7 +20,7 @@ struct base_generator_fixture {
 };
 
 struct generates_basic_code_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
 
     void setup() {
         base_generator_fixture::setup();
@@ -88,7 +88,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_basic_code_suite, generates_basic_code_suite_
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generates_nested_functions_code_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
 
     void setup() {
         base_generator_fixture::setup();
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 
 struct generates_zero_length_code_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
 
     void setup() {
         base_generator_fixture::setup();
@@ -168,7 +168,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code_suite, generates_zero_length
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generates_unknown_function_names_with_zero_args_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
 
     void setup() {
         base_generator_fixture::setup();
@@ -196,7 +196,7 @@ BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_suite, 
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generate_merges_certain_functions_up_in_hierarchy_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
     generator_config_t generator_config = {{}, {"!", "join"}};
 
     void setup() {
@@ -269,7 +269,7 @@ BOOST_FIXTURE_TEST_SUITE(generate_merges_certain_functions_up_in_hierarchy_suite
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generate_properly_uses_separators_config_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
     generator_config_t generator_config = {{}, {"!", "join"}};
 
     void setup() {
