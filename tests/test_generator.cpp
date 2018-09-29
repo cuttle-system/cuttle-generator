@@ -13,16 +13,16 @@ struct base_generator_fixture {
     generator_state_t state;
     generator_config_t generator_config;
 
-    void setup() {
+    virtual void setup() {
         initialize(context);
         initialize(state);
     }
 };
 
 struct generates_basic_code_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{{"\"", {"\""}}}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, {}, {}, false};
 
-    void setup() {
+    void setup() override {
         base_generator_fixture::setup();
 
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
@@ -82,15 +82,39 @@ BOOST_FIXTURE_TEST_SUITE(generates_basic_code_suite, generates_basic_code_suite_
         call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
 
         generate(tokenizer_config, generator_config, context, values, tree, state);
-        BOOST_CHECK_EQUAL(state.output, "foo 1 2 'foo bar'");
+        BOOST_CHECK_EQUAL(state.output, "foo 1 2 \"foo bar\"");
+    }
+
+    BOOST_AUTO_TEST_CASE(case6) {
+        values_t values = {{"foo",     value_type::func_name},
+                           {"1",       value_type::number},
+                           {"2",       value_type::number},
+                           {"foo \nbar", value_type::string}};
+        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "foo 1 2 \"foo \\nbar\"");
+    }
+
+    BOOST_AUTO_TEST_CASE(case7) {
+        tokenizer_config.formatted_characters = {{"~n", "\n"}};
+        tokenizer_config.formatted_characters_output = {{"\n", "~n"}};
+        values_t values = {{"foo",     value_type::func_name},
+                           {"1",       value_type::number},
+                           {"2",       value_type::number},
+                           {"foo \nbar", value_type::string}};
+        call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
+
+        generate(tokenizer_config, generator_config, context, values, tree, state);
+        BOOST_CHECK_EQUAL(state.output, "foo 1 2 \"foo ~nbar\"");
     }
 
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generates_nested_functions_code_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, {}, {}, false};
 
-    void setup() {
+    void setup() override {
         base_generator_fixture::setup();
 
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
@@ -133,9 +157,9 @@ BOOST_AUTO_TEST_SUITE_END()
 
 
 struct generates_zero_length_code_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, {}, {}, false};
 
-    void setup() {
+    void setup() override {
         base_generator_fixture::setup();
 
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
@@ -168,9 +192,9 @@ BOOST_FIXTURE_TEST_SUITE(generates_zero_length_code_suite, generates_zero_length
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generates_unknown_function_names_with_zero_args_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, {}, {}, false};
 
-    void setup() {
+    void setup() override {
         base_generator_fixture::setup();
 
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
@@ -196,10 +220,10 @@ BOOST_FIXTURE_TEST_SUITE(generates_unknown_function_names_with_zero_args_suite, 
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generate_merges_certain_functions_up_in_hierarchy_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, {}, {}, false};
     generator_config_t generator_config = {{}, {"!", "join"}};
 
-    void setup() {
+    void setup() override {
         base_generator_fixture::setup();
 
         add(context, "+", {function_type::infix, 2}, FUNCTION_ID_UNKNOWN);
@@ -269,10 +293,10 @@ BOOST_FIXTURE_TEST_SUITE(generate_merges_certain_functions_up_in_hierarchy_suite
 BOOST_AUTO_TEST_SUITE_END()
 
 struct generate_properly_uses_separators_config_suite_fixture : public base_generator_fixture {
-    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, false};
+    tokenizer_config_t tokenizer_config = {{}, {{"'", {"'"}}}, {}, {}, {}, {}, {}, {}, {}, {}, false};
     generator_config_t generator_config = {{}, {"!", "join"}};
 
-    void setup() {
+    void setup() override {
         base_generator_fixture::setup();
 
         add(context, "quux", {function_type::prefix, 3}, FUNCTION_ID_UNKNOWN);
