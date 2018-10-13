@@ -45,7 +45,7 @@ void set_function(const context_t &context, generator_state_t &state) {
         state.function = context.funcs[function_id];
 
         if (state.args_indexes.size() != state.function.args_number) {
-            throw generate_error("'" + state.function_name + "' recieves " + std::to_string(state.function.args_number) + " args");
+            throw generate_error("'" + state.function_name + "' receives " + std::to_string(state.function.args_number) + " args");
         }
     } else {
         throw generate_error("'" + state.function_name + "' not found");
