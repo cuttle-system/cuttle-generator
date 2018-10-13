@@ -8,14 +8,6 @@ std::string present_formatted_characters(const cuttle::tokenizer_config_t &confi
             acc += it->second;
         } else if (ch == '\n') {
             acc += "\\n";
-        } else if (ch == '\t') {
-            acc += "\\t";
-        } else if (ch == '"') {
-            acc += "\\\"";
-        } else if (ch == '\'') {
-            acc += "\\'";
-        } else if (ch == '\r') {
-            acc += "\\r";
         } else {
             acc += ch;
         }
