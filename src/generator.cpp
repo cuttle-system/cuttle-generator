@@ -3,6 +3,7 @@
 #include "generate_error.hpp"
 #include "generator_presenters_methods.hpp"
 #include "presenter.hpp"
+#include "translator.hpp"
 
 #include "generator_defaults.hpp"
 
@@ -16,7 +17,7 @@ std::string present_function_name(generator_state_t &state) {
 }
 
 void joined_function_check(generator_state_t &state, const generator_config_t &generator_config, bool override) {
-    if (generator_config.joined_functions.count(state.function_name)) {
+    if (generator_config.joined_functions.count(state.function_name) || state.function_name == CUTTLE_MERGE_WITH_PARENT_FUNC) {
         state.joined_function = true;
         state.include_function_name = false;
     } else {
