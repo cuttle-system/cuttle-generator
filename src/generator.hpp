@@ -16,6 +16,7 @@ namespace cuttle {
         bool joined_function;
         bool include_function_name;
         generator_presenters_t presenters;
+        cuttle::generator_presenter_params_t presenter_params;
 
         tree_src_elements_t args_indexes;
 

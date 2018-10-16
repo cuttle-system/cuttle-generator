@@ -14,13 +14,13 @@ struct base_presenters_map_fixture {
 BOOST_FIXTURE_TEST_SUITE(presenters_map_add_suite, base_presenters_map_fixture)
 
     BOOST_AUTO_TEST_CASE(case1) {
-        auto func1 = [](int argi, bool is_func) {
+        auto func1 = [](int argi, bool is_func, generator_presenter_params_t &params) {
             return std::string("function1");
         };
-        auto func2 = [](int argi, bool is_func) {
+        auto func2 = [](int argi, bool is_func, generator_presenter_params_t &params) {
             return std::string("function2");
         };
-        auto func3 = [](int argi, bool is_func) {
+        auto func3 = [](int argi, bool is_func, generator_presenter_params_t &params) {
             return false;
         };
         add(presenters_map, "+", func1, func2, func3);
@@ -32,11 +32,11 @@ BOOST_FIXTURE_TEST_SUITE(presenters_map_add_suite, base_presenters_map_fixture)
 #ifndef _WIN32
 
     BOOST_AUTO_TEST_CASE(case2) {
-        auto func1 = [](int argi, bool is_func) {
+        auto func1 = [](int argi, bool is_func, generator_presenter_params_t &params) {
             return std::string("function1");
         };
         generator_separator_func_t *func2 = nullptr;
-        auto func3 = [](int argi, bool is_func) {
+        auto func3 = [](int argi, bool is_func, generator_presenter_params_t &params) {
             return false;
         };
         add(presenters_map, "+", func1, func2, func3);
@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_SUITE(presenters_map_add_suite, base_presenters_map_fixture)
     BOOST_AUTO_TEST_CASE(case3) {
         auto func1 = nullptr;
         auto func2 = nullptr;
-        auto func3 = [](int argi, bool is_func) {
+        auto func3 = [](int argi, bool is_func, generator_presenter_params_t &params) {
             return false;
         };
         add(presenters_map, "+", func1, func2, func3);

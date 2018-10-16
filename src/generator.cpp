@@ -25,12 +25,18 @@ void joined_function_check(generator_state_t &state, const generator_config_t &g
         state.arg_index = 0;
         if (generator_config.presenters_map.count(state.function_name)) {
             state.presenters = generator_config.presenters_map.at(state.function_name);
+            if (generator_config.presenters_params.count(state.function_name)) {
+                state.presenter_params = generator_config.presenters_params.at(state.function_name);
+            } else {
+                state.presenter_params = {};
+            }
         } else {
             if (!override) {
                 state.presenters = generator_presenters_t{
                         generator::defaults::basic::presenter_left_separator,
                         generator::defaults::basic::presenter_right_separator,
                         generator::defaults::basic::presenter_skip};
+                state.presenter_params = {};
             }
         }
     }
@@ -67,6 +73,7 @@ void generate_child(unsigned int argi,
     child_state.index = argi;
     child_state.arg_index = state.arg_index;
     child_state.presenters = state.presenters;
+    child_state.presenter_params = state.presenter_params;
     generate_inner(tokenizer_config, generator_config, context, values, tree, child_state);
     if (child_state.joined_function) {
         state.output += child_state.output;
@@ -136,6 +143,7 @@ void cuttle::generate(const tokenizer_config_t &tokenizer_config, const generato
             generator::defaults::root::presenter_left_separator,
             generator::defaults::root::presenter_right_separator,
             generator::defaults::root::presenter_skip};
+    state.presenter_params = {};
     generate_inner(tokenizer_config, generator_config, context, values, tree, state, true);
 }
 

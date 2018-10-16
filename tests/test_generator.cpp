@@ -308,12 +308,12 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
 
 
         add(generator_config.presenters_map, "+",
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 if (argi == 0) return std::string("");
                 return std::string("\n");
-            }, [](int argi, bool is_func) {
+            }, [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return std::string("");
-            }, [](int argi, bool is_func) {
+            }, [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return false;
             }
         );
@@ -321,7 +321,7 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
         add(generator_config.presenters_map, "-",
             nullptr,
             nullptr,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return is_func;
             }
         );
@@ -329,18 +329,18 @@ struct generate_properly_uses_separators_config_suite_fixture : public base_gene
         add(generator_config.presenters_map, "++",
             nullptr,
             nullptr,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return is_func;
             }
         );
 
         add(generator_config.presenters_map, "quux",
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 if (argi == 0) return std::string("");
                 return std::string("   ");
             },
             nullptr,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return is_func;
             }
         );
@@ -397,12 +397,12 @@ BOOST_FIXTURE_TEST_SUITE(generate_properly_uses_separators_config_suite,
         call_tree_t tree = {{{1, 2, 3}, {}, {}, {}, {0}}};
 
         add(generator_config.presenters_map, GENERATOR_ROOT_FUNCTION_NAME,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 if (argi == 0) return std::string("");
                 return std::string(" ");
             },
             nullptr,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return is_func;
             }
         );
@@ -421,12 +421,12 @@ BOOST_FIXTURE_TEST_SUITE(generate_properly_uses_separators_config_suite,
         call_tree_t tree = {{{1, 2, 5}, {}, {3, 4}, {}, {}, {}, {0}}};
 
         add(generator_config.presenters_map, GENERATOR_ROOT_FUNCTION_NAME,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 if (argi == 0) return std::string("");
                 return std::string(" ");
             },
             nullptr,
-            [](int argi, bool is_func) {
+            [](int argi, bool is_func, generator_presenter_params_t &params) {
                 return is_func;
             }
         );

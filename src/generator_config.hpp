@@ -9,5 +9,6 @@ namespace cuttle {
     struct generator_config_t {
         generator_presenters_map_t presenters_map;
         merged_up_functions_t joined_functions;
+        generator_presenters_params_t presenters_params;
     };
 }

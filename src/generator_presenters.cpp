@@ -5,7 +5,7 @@ std::string
 cuttle::present(generator_state_t &state, const std::string &argument_string, int argi, bool is_func) {
     using namespace cuttle;
 
-    if (state.presenters.skip(argi, is_func)) {
+    if (state.presenters.skip(argi, is_func, state.presenter_params)) {
         return "";
     }
 
@@ -13,7 +13,7 @@ cuttle::present(generator_state_t &state, const std::string &argument_string, in
         ++state.arg_index;
     }
 
-    return state.presenters.left_separator(argi, is_func)
+    return state.presenters.left_separator(argi, is_func, state.presenter_params)
         + argument_string
-        + state.presenters.right_separator(argi, is_func);
+        + state.presenters.right_separator(argi, is_func, state.presenter_params);
 }
