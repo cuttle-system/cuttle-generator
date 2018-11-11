@@ -52,7 +52,7 @@ void set_function(const context_t &context, generator_state_t &state) {
         state.function = context.funcs[function_id];
 
         if (state.args_indexes.size() != state.function.args_number) {
-            throw generate_error("'" + state.function_name + "' receives " + std::to_string(state.function.args_number) + " args");
+//            throw generate_error("'" + state.function_name + "' receives " + std::to_string(state.function.args_number) + " args");
         }
     } else {
         throw generate_error("'" + state.function_name + "' not found");
@@ -91,7 +91,10 @@ void iterate_through_args(
         generator_state_t &state) {
 
     for (tree_src_element_t i = 0; i < state.args_indexes.size(); ++i) {
-        if (state.function.type == function_type::infix && i == state.function.args_number / 2) {
+        if (state.function.type == function_type::postinfix && i == 1) {
+            state.output += present_function_name(state);
+        }
+        if (state.function.type == function_type::infix && i == state.args_indexes.size() / 2) {
             state.output += present_function_name(state);
         }
 
@@ -120,7 +123,7 @@ void generate_inner(const tokenizer_config_t &tokenizer_config, const generator_
     joined_function_check(state, generator_config, override);
     set_function(context, state);
 
-	if (state.function.type == function_type::prefix) {
+	if (state.function.type == function_type::prefix || state.function.type == function_type::postprefix) {
 		state.output += present_function_name(state);
 	}
 
