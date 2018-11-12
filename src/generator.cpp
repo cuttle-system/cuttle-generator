@@ -99,7 +99,9 @@ void iterate_through_args(
         }
 
         tree_src_element_t argi = state.args_indexes[i];
-        if (values[argi].type == value_type::func_name) {
+        if (argi == CALL_TREE_SRC_NIL) {
+            ++state.arg_index;
+        } else if (values[argi].type == value_type::func_name) {
             generate_child(argi, tokenizer_config, generator_config, context, values, tree, state);
         } else {
             state.output += present(state, present(tokenizer_config, values[argi]), state.arg_index);
